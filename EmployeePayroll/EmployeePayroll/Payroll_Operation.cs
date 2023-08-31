@@ -11,7 +11,7 @@ namespace EmployeePayroll
     class Payroll_Operation
     {
         private SqlConnection con = new SqlConnection("data source = (localdb)\\MSSQLLocalDB; initial catalog = Payroll_service; integrated security = true");
-    public PayrollEmployee AddEmployeeDetails(PayrollEmployee employee)
+    public void AddEmployeeDetails(PayrollEmployee employee)
     {
         try
         {
@@ -30,10 +30,8 @@ namespace EmployeePayroll
             com.Parameters.AddWithValue("@income_tax", employee.income_tax);
             com.Parameters.AddWithValue("@net_pay", employee.net_pay);
             con.Open();
-            var i = com.ExecuteScalar();
+            com.ExecuteNonQuery();
             Console.WriteLine("Database Added");
-            employee.id = Convert.ToInt32(i);
-            return employee;
         }
         catch (Exception ex)
         {
@@ -108,13 +106,13 @@ namespace EmployeePayroll
         con.Close();
         foreach (DataRow dr in dt.Rows)
         {
-            emplist.Add(
+             emplist.Add(
                 new PayrollEmployee
                 {
                     id = Convert.ToInt32(dr["id"]),
                     name = Convert.ToString(dr["name"]),
                     salary = Convert.ToString(dr["salary"]),
-                    start_date = Convert.ToString(dr["start_date"]),
+                    StartDate = Convert.ToDateTime(dr["start_date"]),
                     gender = Convert.ToChar(dr["Gender"]),
                     phone = Convert.ToString(dr["phone"]),
                     address = Convert.ToString(dr["Address"]),
@@ -129,9 +127,84 @@ namespace EmployeePayroll
         }
         foreach (var data in emplist)
         {
-            Console.WriteLine(data.name + " " + data.salary + " " + data.phone + " " + data.address + " " + data.department + " " + data.start_date);
+            Console.WriteLine(data.name + " " + data.salary + " " + data.phone + " " + data.address + " " + data.department + " " + data.StartDate.ToLongDateString());
         }
     }
-
+    public void RetreivedatainaParticularPeriod(string Date)
+        {
+            try
+            {
+                List<PayrollEmployee> emplist = new List<PayrollEmployee>();
+                SqlCommand com = new SqlCommand("ParticularPeriod", con);
+                com.CommandType = CommandType.StoredProcedure;
+                com.Parameters.AddWithValue("@start_date", Date); 
+                SqlDataAdapter da = new SqlDataAdapter(com);
+                DataTable dt = new DataTable();
+                con.Open();
+                da.Fill(dt);
+                con.Close();
+                foreach (DataRow dr in dt.Rows)
+                {
+                    emplist.Add(
+                       new PayrollEmployee
+                       {
+                           id = Convert.ToInt32(dr["id"]),
+                           name = Convert.ToString(dr["name"]),
+                           salary = Convert.ToString(dr["salary"]),
+                           StartDate = Convert.ToDateTime(dr["start_date"]),
+                           gender = Convert.ToChar(dr["Gender"]),
+                           phone = Convert.ToString(dr["phone"]),
+                           address = Convert.ToString(dr["Address"]),
+                           department = Convert.ToString(dr["department"]),
+                           basic_pay = Convert.ToInt64(dr["basic_pay"]),
+                           deductions = Convert.ToInt64(dr["deductions"]),
+                           taxable_pay = Convert.ToInt64(dr["taxable_pay"]),
+                           income_tax = Convert.ToInt64(dr["income_tax"]),
+                           net_pay = Convert.ToInt64(dr["net_pay"]),
+                       }
+                       );
+                }
+                foreach (var data in emplist)
+                {
+                    Console.WriteLine(data.name + " " + data.salary + " " + data.phone + " " + data.address + " " + data.department + " " + data.StartDate.ToLongDateString());
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                con.Close();
+            }
+        }
+        public void SumAvgMinMax()
+        {
+            try
+            {
+                SqlCommand com = new SqlCommand("SumAvgMinMax", con);
+                com.CommandType = CommandType.StoredProcedure;
+                SqlDataAdapter da = new SqlDataAdapter(com);
+                DataTable dt = new DataTable();
+                con.Open();
+                da.Fill(dt);
+                con.Close();
+                foreach (DataRow dr in dt.Rows)
+                {
+                    Console.WriteLine("Sum ="+ Convert.ToString(dr["sum"]));
+                    Console.WriteLine("Avg ="+Convert.ToString(dr["avg"]));
+                    Console.WriteLine("Min ="+ Convert.ToString(dr["min"]));
+                    Console.WriteLine("Max ="+ Convert.ToString(dr["max"]));
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                con.Close();
+            }
+        }
     }
 }

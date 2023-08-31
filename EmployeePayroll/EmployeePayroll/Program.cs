@@ -6,13 +6,13 @@ namespace ADODemo
     {
         static void Main()
         {
-          //Payroll employee Stored Proceudre
+         //Payroll employee Stored Proceudre
            PayrollEmployee employee = new PayrollEmployee()
             {
-                id = 9,
+                //id = 9,
                 name = "Teressa",
                 salary = "2000",
-                start_date = "",
+                start_date = "2018/01/01",
                 gender = 'F',
                 phone = "9898789898",
                 address = "chennai",
@@ -24,10 +24,12 @@ namespace ADODemo
                 net_pay = 300,
             };
             Payroll_Operation payroll = new Payroll_Operation();
-          //  payroll.AddEmployeeDetails(employee);
-            payroll.deletemployeeeDetails(15);
-          //  payroll.UpdateEmployee(employee);
-          //  payroll.GetAllEmployeeDetails();
+            // payroll.AddEmployeeDetails(employee);
+            // payroll.deletemployeeeDetails(16);
+            // payroll.UpdateEmployee(employee);
+            // payroll.GetAllEmployeeDetails();
+            //payroll.RetreivedatainaParticularPeriod("2019-01-01");
+            payroll.SumAvgMinMax();
         }
 
     }
